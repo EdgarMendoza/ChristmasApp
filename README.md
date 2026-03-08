@@ -22,8 +22,17 @@ The flagship feature is a **"Pass the Phone" Secret Santa Generator**.
 - **Persistence**: Browser Local Storage for persistent state without a database.
 - **Deployment**: Optimized for static hosting (GitHub Pages, Static Web Apps).
 
-## 🚀 Getting Started
+## 🚀 Getting Started locally
 1. Clone the repository.
 2. Ensure you have the .NET 10 SDK installed.
 3. Run `dotnet watch run` to start the development server.
 4. Open the app in your browser and start organizing!
+
+## ☁️ Publishing to Cloudflare Pages
+This project is pre-configured for Cloudflare Pages handling via the `_redirects` file in `wwwroot` for SPA routing.
+1. Push this repository to GitHub or GitLab.
+2. In the Cloudflare Dashboard, create a new **Pages** project from your Git repository.
+3. Use the following build settings:
+   - **Framework preset**: None
+   - **Build command**: `curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -c 10.0 && export PATH="$HOME/.dotnet:$PATH" && dotnet publish ChristmasApp.csproj -c Release -o output`
+   - **Build output directory**: `output/wwwroot`
