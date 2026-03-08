@@ -1,0 +1,55 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Fixed="true" Elevation="2">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
+        <MudText Typo="Typo.h6">Christmas Helper</MudText>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Menu</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Href="/secretsanta" Icon="@Icons.Material.Filled.CardGiftcard" Match="NavLinkMatch.Prefix">Secret Santa</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Style="background-color: #f7f9f9; min-height: 100vh;">
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="pt-6 pb-8">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme _currentTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#D32F2F", // Christmas Red
+            Secondary = "#2E7D32", // Christmas Green
+            Tertiary = "#FBC02D", // Gold/Star yellow
+            AppbarBackground = "#D32F2F",
+            Background = "#F7F9F9", // snowy white
+            Surface = "#FFFFFF",
+            TextPrimary = "#212121",
+            TextSecondary = "#5F6368",
+            ActionDefault = "#2E7D32",
+            PrimaryDarken = "#B71C1C",
+            SecondaryDarken = "#1B5E20"
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DefaultBorderRadius = "16px"
+        }
+    };
+
+    private bool _drawerOpen = false;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+}

@@ -1,0 +1,118 @@
+@using ChristmasApp.SecretSanta
+
+@if (IsFinished)
+{
+    <MudPaper Class="pa-6 text-center" Elevation="3" Style="position: relative;">
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="Edit" Size="Size.Small" Style="position: absolute; top: 12px; right: 12px;" />
+        
+        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size: 4rem;" Class="mb-4 mx-auto" />
+        <MudText Typo="Typo.h4" Class="mb-4" Align="Align.Center">All Done!</MudText>
+        <MudText Typo="Typo.body1" Class="mb-6" Align="Align.Center">Everyone has seen their Secret Santa assignment. Enjoy the gift exchange!</MudText>
+        
+        <div class="d-flex flex-column gap-3">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="FinishAndClear" FullWidth="true">Finish & Clear All</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Large" OnClick="Edit" FullWidth="true">Edit Participants</MudButton>
+        </div>
+    </MudPaper>
+}
+else if (CurrentParticipant != null)
+{
+    <MudPaper Class="pa-6 text-center" Elevation="3" Style="min-height: 400px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="Edit" Size="Size.Small" Style="position: absolute; top: 12px; right: 12px;" />
+
+        @if (!ShowAssignment && !_isRevealing)
+        {
+            <div class="d-flex flex-column align-center">
+                <MudIcon Icon="@Icons.Material.Filled.Smartphone" Color="Color.Primary" Style="font-size: 5rem;" Class="mb-4" />
+                <MudText Typo="Typo.h4" Class="mb-6" Align="Align.Center">Pass the phone to <b>@CurrentParticipant.Name</b></MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" OnClick="Reveal">I am @CurrentParticipant.Name</MudButton>
+            </div>
+        }
+        else if (_isRevealing)
+        {
+            <div class="pulse-container d-flex flex-column align-center">
+                <MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Color="Color.Tertiary" Style="font-size: 6rem;" Class="mb-4 pulsing-icon" />
+                <MudText Typo="Typo.h5" Align="Align.Center">Opening your assignment...</MudText>
+            </div>
+        }
+        else
+        {
+            <div class="reveal-animation d-flex flex-column align-center" style="width: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Color="Color.Tertiary" Style="font-size: 5rem;" Class="mb-4" />
+                <MudText Typo="Typo.h5" Class="mb-2" Align="Align.Center">You are giving a gift to:</MudText>
+                <MudText Typo="Typo.h3" Color="Color.Primary" Class="mb-6 font-weight-bold" Align="Align.Center">@AssignedParticipant?.Name</MudText>
+                
+                @if (!string.IsNullOrWhiteSpace(AssignedParticipant?.GiftNotes))
+                {
+                    <MudAlert Severity="Severity.Info" Class="mb-6 text-center" ContentAlignment="HorizontalAlignment.Center" Style="width: 100%;">
+                        <b>Wishlist / Notes:</b><br />
+                        @AssignedParticipant.GiftNotes
+                    </MudAlert>
+                }
+
+                <MudText Typo="Typo.body2" Color="Color.Error" Class="mb-6" Align="Align.Center"><b>Memorize this!</b> Do not tell anyone else.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Large" OnClick="NextPerson">Hide & Next</MudButton>
+            </div>
+        }
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public List<Participant> Participants { get; set; } = new();
+
+    [Parameter]
+    public List<Assignment> Assignments { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback OnFinishAndClear { get; set; }
+
+    private int CurrentIndex { get; set; } = 0;
+    private bool ShowAssignment { get; set; } = false;
+    private bool _isRevealing = false;
+    private bool IsFinished => CurrentIndex >= Participants.Count;
+
+    private Participant? CurrentParticipant => IsFinished ? null : Participants[CurrentIndex];
+    
+    private Participant? AssignedParticipant
+    {
+        get
+        {
+            if (CurrentParticipant == null) return null;
+            var assignment = Assignments.FirstOrDefault(a => a.GiverId == CurrentParticipant.Id);
+            if (assignment == null) return null;
+            return Participants.FirstOrDefault(p => p.Id == assignment.ReceiverId);
+        }
+    }
+
+    private async Task Reveal()
+    {
+        _isRevealing = true;
+        StateHasChanged();
+        
+        await Task.Delay(1500);
+        
+        _isRevealing = false;
+        ShowAssignment = true;
+        StateHasChanged();
+    }
+
+    private void NextPerson()
+    {
+        ShowAssignment = false;
+        CurrentIndex++;
+    }
+
+    private async Task Edit()
+    {
+        await OnEdit.InvokeAsync();
+    }
+
+    private async Task FinishAndClear()
+    {
+        await OnFinishAndClear.InvokeAsync();
+    }
+}

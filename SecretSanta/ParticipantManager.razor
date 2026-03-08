@@ -1,0 +1,124 @@
+@using ChristmasApp.SecretSanta
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4 mb-4" Elevation="2">
+    <MudText Typo="Typo.h6" Class="mb-4">Add Participant</MudText>
+    <MudForm @ref="_form" Class="d-flex flex-column gap-4">
+        <MudTextField @bind-Value="_newName" Label="Name" Required="true" RequiredError="Name is required!" FullWidth="true" />
+        <MudTextField @bind-Value="_newNotes" Label="Gift Notes / Wishlist (Optional)" FullWidth="true" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddParticipant" FullWidth="true" Class="mt-2">Add Participant</MudButton>
+    </MudForm>
+</MudPaper>
+
+@if (Participants.Any())
+{
+    <MudTable Items="@Participants" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="2" Class="mb-4">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Gift Notes</MudTh>
+            <MudTh>Exclusions</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Gift Notes">@context.GiftNotes</MudTd>
+            <MudTd DataLabel="Exclusions">
+                <MudSelect T="Guid" MultiSelection="true" @bind-SelectedValues="context.ExclusionIds" 
+                           Label="Select exclusions" AnchorOrigin="Origin.BottomCenter"
+                           ToStringFunc="@(id => Participants.FirstOrDefault(p => p.Id == id)?.Name ?? "Unknown")">
+                    @foreach (var p in Participants.Where(p => p.Id != context.Id))
+                    {
+                        <MudSelectItem T="Guid" Value="@p.Id">@p.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => RemoveParticipant(context.Id))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <div class="d-flex flex-column gap-3 mt-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" OnClick="OnGenerateClicked" FullWidth="true">Generate Assignments 🎄</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="OnClearAllParticipants" FullWidth="true">Clear All</MudButton>
+    </div>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">Add some participants to get started!</MudAlert>
+}
+
+@code {
+    [Parameter]
+    public List<Participant> Participants { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<Participant>> ParticipantsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnGenerate { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearAll { get; set; }
+
+    private MudForm _form = null!;
+    private string _newName = string.Empty;
+    private string _newNotes = string.Empty;
+
+    private async Task AddParticipant()
+    {
+        await _form.ValidateAsync();
+        if (_form.IsValid)
+        {
+            if (Participants.Any(p => p.Name.Equals(_newName, StringComparison.OrdinalIgnoreCase)))
+            {
+                Snackbar.Add("A participant with this name already exists.", Severity.Warning);
+                return;
+            }
+
+            var p = new Participant { Name = _newName, GiftNotes = _newNotes };
+            Participants.Add(p);
+            
+            _newName = string.Empty;
+            _newNotes = string.Empty;
+            await _form.ResetAsync();
+            
+            await ParticipantsChanged.InvokeAsync(Participants);
+        }
+    }
+
+    private async Task RemoveParticipant(Guid id)
+    {
+        Participants.RemoveAll(p => p.Id == id);
+        // Remove this participant from everyone's exclusions
+        foreach (var p in Participants)
+        {
+            if (p.ExclusionIds.Contains(id))
+            {
+                p.ExclusionIds = p.ExclusionIds.Where(e => e != id).ToList();
+            }
+        }
+        await ParticipantsChanged.InvokeAsync(Participants);
+    }
+
+    private async Task OnGenerateClicked()
+    {
+        if (Participants.Count < 2)
+        {
+            Snackbar.Add("You need at least 2 participants to generate Secret Santa.", Severity.Warning);
+            return;
+        }
+
+        // Save latest state (especially exclusions) before generating
+        await ParticipantsChanged.InvokeAsync(Participants);
+        
+        await OnGenerate.InvokeAsync();
+    }
+
+    private async Task OnClearAllParticipants()
+    {
+        Participants.Clear();
+        await ParticipantsChanged.InvokeAsync(Participants);
+        await OnClearAll.InvokeAsync();
+    }
+}

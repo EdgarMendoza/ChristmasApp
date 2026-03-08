@@ -1,0 +1,18 @@
+.pulsing-icon {
+    animation: pulse 1s infinite ease-in-out;
+}
+
+.reveal-animation {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
