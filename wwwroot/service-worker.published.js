@@ -24,7 +24,7 @@ async function onInstall(event) {
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
         .map(asset => new Request(asset.url, { integrity: asset.hash, cache: 'no-cache' }));
-        
+
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 
@@ -39,27 +39,40 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
-    let cachedResponse = null;
-    if (event.request.method === 'GET') {
-        // For all navigation requests, try to serve index.html from cache
-        const shouldServeIndexHtml = event.request.mode === 'navigate';
-        const request = shouldServeIndexHtml ? 'index.html' : event.request;
-        const cache = await caches.open(cacheName);
-        cachedResponse = await cache.match(request);
-    }
+    if (event.request.method !== 'GET') return;
 
-    if (cachedResponse) {
-        // THE FIX: If Cloudflare or a proxy marked this as 'redirected', 
-        // we strip that flag so the browser doesn't throw a Security Error.
-        if (cachedResponse.redirected) {
-            return new Response(cachedResponse.body, {
-                headers: cachedResponse.headers,
-                status: cachedResponse.status,
-                statusText: cachedResponse.statusText
+    event.respondWith((async () => {
+        const cache = await caches.open(CACHE_NAME);
+        
+        // 1. Try to find the exact file in cache (e.g., /main.css or /_framework/dotnet.wasm)
+        let response = await cache.match(event.request);
+
+        // 2. If not in cache, try the network
+        if (!response) {
+            try {
+                response = await fetch(event.request);
+                if (response.ok) {
+                    await cache.put(event.request, response.clone());
+                }
+            } catch (error) {
+                // 3. OFFLINE FALLBACK
+                // If the network fails and it's a navigation request (like /settings),
+                // serve the cached index.html so Blazor can boot up.
+                if (event.request.mode === 'navigate') {
+                    response = await cache.match('index.html');
+                }
+            }
+        }
+
+        // 4. THE REDIRECT FIX (Still required for Cloudflare)
+        if (response && response.redirected) {
+            return new Response(response.body, {
+                headers: response.headers,
+                status: response.status,
+                statusText: response.statusText
             });
         }
-        return cachedResponse;
-    }
 
-    return fetch(event.request);
+        return response || fetch(event.request);
+    })());
 }
