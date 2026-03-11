@@ -1,30 +1,34 @@
 @using ChristmasApp.SecretSanta
 @inject ISnackbar Snackbar
 
-<MudPaper Class="pa-4 mb-4" Elevation="2">
-    <MudText Typo="Typo.h6" Class="mb-4">Add Participant</MudText>
-    <MudForm @ref="_form" Class="d-flex flex-column gap-4">
-        <MudTextField @bind-Value="_newName" Label="Name" Required="true" RequiredError="Name is required!" FullWidth="true" />
-        <MudTextField @bind-Value="_newNotes" Label="Gift Notes / Wishlist (Optional)" FullWidth="true" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddParticipant" FullWidth="true" Class="mt-2">Add Participant</MudButton>
+<MudPaper Class="pa-6 mb-8 glass-panel rounded-xl" Elevation="0">
+    <MudText Typo="Typo.h5" Class="mb-6 font-weight-bold" Color="Color.Primary">Add Participant</MudText>
+    <MudForm @ref="_form" Class="d-flex flex-column gap-5">
+        <MudTextField @bind-Value="_newName" Label="Name" Required="true" RequiredError="Name is required!" FullWidth="true" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="_newNotes" Label="Gift Notes / Wishlist (Optional)" FullWidth="true" Variant="Variant.Outlined" Lines="2" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="AddParticipant" FullWidth="true" Class="mt-2 py-3 rounded-lg hover-lift font-weight-bold">
+            Add Participant
+        </MudButton>
     </MudForm>
 </MudPaper>
 
 @if (Participants.Any())
 {
-    <MudTable Items="@Participants" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="2" Class="mb-4">
+    <MudTable Items="@Participants" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Class="mb-8 glass-panel rounded-xl">
         <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Gift Notes</MudTh>
-            <MudTh>Exclusions</MudTh>
-            <MudTh>Actions</MudTh>
+            <MudTh><MudText Typo="Typo.subtitle2" Class="font-weight-bold">Name</MudText></MudTh>
+            <MudTh><MudText Typo="Typo.subtitle2" Class="font-weight-bold">Gift Notes</MudText></MudTh>
+            <MudTh><MudText Typo="Typo.subtitle2" Class="font-weight-bold">Exclusions</MudText></MudTh>
+            <MudTh><MudText Typo="Typo.subtitle2" Class="font-weight-bold">Actions</MudText></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Name">
+                <MudText Typo="Typo.body1" Class="font-weight-bold">@context.Name</MudText>
+            </MudTd>
             <MudTd DataLabel="Gift Notes">@context.GiftNotes</MudTd>
             <MudTd DataLabel="Exclusions">
                 <MudSelect T="Guid" MultiSelection="true" @bind-SelectedValues="context.ExclusionIds" 
-                           Label="Select exclusions" AnchorOrigin="Origin.BottomCenter"
+                           Label="Select exclusions" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" Margin="Margin.Dense"
                            ToStringFunc="@(id => Participants.FirstOrDefault(p => p.Id == id)?.Name ?? "Unknown")">
                     @foreach (var p in Participants.Where(p => p.Id != context.Id))
                     {
@@ -38,14 +42,21 @@
         </RowTemplate>
     </MudTable>
 
-    <div class="d-flex flex-column gap-3 mt-4">
-        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" OnClick="OnGenerateClicked" FullWidth="true">Generate Assignments 🎄</MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="OnClearAllParticipants" FullWidth="true">Clear All</MudButton>
+    <div class="glass-panel pa-6 rounded-xl d-flex flex-column gap-4 align-center text-center">
+        <MudText Typo="Typo.h6" Class="font-weight-bold">Ready to mix things up?</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" OnClick="OnGenerateClicked" FullWidth="true" Class="hover-lift py-3 rounded-lg font-weight-bold" Style="max-width: 400px;">
+            Generate Assignments 🎄
+        </MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="OnClearAllParticipants" Class="font-weight-bold">
+            Clear All Participants
+        </MudButton>
     </div>
 }
 else
 {
-    <MudAlert Severity="Severity.Info">Add some participants to get started!</MudAlert>
+    <MudAlert Severity="Severity.Info" Class="rounded-lg mb-6 shadow-sm" ContentAlignment="HorizontalAlignment.Center">
+        Add some participants above to get started!
+    </MudAlert>
 }
 
 @code {

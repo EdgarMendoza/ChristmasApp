@@ -6,11 +6,13 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="true" Elevation="2">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
-        <MudText Typo="Typo.h6">Christmas Helper</MudText>
+    <MudAppBar Color="Color.Inherit" Fixed="true" Elevation="0" Class="glass-panel" Style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
+        <MudText Typo="Typo.h6" Color="Color.Primary" Class="font-weight-bold ml-2">Holiday Helper</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/secretsanta" StartIcon="@Icons.Material.Filled.CardGiftcard" Class="hidden-sm-and-down">Secret Santa</MudButton>
     </MudAppBar>
-    <MudDrawer @bind-Open="@_drawerOpen">
+    <MudDrawer @bind-Open="@_drawerOpen" Elevation="1">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">Menu</MudText>
         </MudDrawerHeader>
@@ -31,21 +33,22 @@
     {
         PaletteLight = new PaletteLight()
         {
-            Primary = "#D32F2F", // Christmas Red
-            Secondary = "#2E7D32", // Christmas Green
-            Tertiary = "#FBC02D", // Gold/Star yellow
-            AppbarBackground = "#D32F2F",
-            Background = "#F7F9F9", // snowy white
+            Primary = "#C62828", // Richer Christmas Red
+            Secondary = "#1B5E20", // Richer Christmas Green
+            Tertiary = "#FBC02D", // Gold
+            AppbarBackground = "#FFFFFF", // Clean white appbar
+            AppbarText = "#212121",
+            Background = "#F5F7FA", // Off-white/slate snow background
             Surface = "#FFFFFF",
-            TextPrimary = "#212121",
-            TextSecondary = "#5F6368",
-            ActionDefault = "#2E7D32",
+            TextPrimary = "#1E293B", // Softer, premium dark text
+            TextSecondary = "#64748B",
+            ActionDefault = "#1B5E20",
             PrimaryDarken = "#B71C1C",
-            SecondaryDarken = "#1B5E20"
+            SecondaryDarken = "#144818"
         },
         LayoutProperties = new LayoutProperties()
         {
-            DefaultBorderRadius = "16px"
+            DefaultBorderRadius = "20px" // Softer, modern corners
         }
     };
 

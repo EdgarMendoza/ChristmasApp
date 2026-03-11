@@ -1,4 +1,4 @@
-# 🎄 Christmas Helper
+# 🎄 Holiday Helper
 
 A beautiful, lightweight, and phone-friendly **Blazor WebAssembly PWA** designed to make holiday organization simple and fun.
 

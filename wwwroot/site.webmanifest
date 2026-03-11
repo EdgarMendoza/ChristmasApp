@@ -1,6 +1,6 @@
 {
-  "name": "Christmas Helper",
-  "short_name": "ChristmasHelper",
+  "name": "Holiday Helper",
+  "short_name": "HolidayHelper",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

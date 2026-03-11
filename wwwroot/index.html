@@ -4,15 +4,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'; connect-src 'self';" />
-    <title>Christmas Helper</title>
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'; connect-src 'self';" />
+    <title>Holiday Helper</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
 
     <link rel="stylesheet" href="css/app.css?v=1" />
     <link href="ChristmasApp.styles.css?v=1" rel="stylesheet" />
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css?v=1" rel="stylesheet" />
 
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -45,9 +48,9 @@
 
     <script>
         navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' })
-        .then(registration => {
-            console.log('Service Worker registered');
-        });
+            .then(registration => {
+                console.log('Service Worker registered');
+            });
     </script>
 </body>
 

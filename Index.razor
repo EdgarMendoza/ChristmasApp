@@ -1,16 +1,24 @@
 @page "/"
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex flex-column align-center justify-center text-center mt-16" Style="min-height: 70vh;">
-    <MudImage Src="/logo.png" Alt="Christmas Helper Logo" Width="500" Class="mb-6 rounded-lg" />
-    
-    <MudText Typo="Typo.h3" Color="Color.Primary" Class="mb-4" Align="Align.Center"><b>Christmas Helper</b></MudText>
-    
-    <MudText Typo="Typo.h6" Class="mb-8 font-weight-regular text-muted" Align="Align.Center">
-        Your all-in-one companion to help with Christmas-related activities. 
-        Organize gift exchanges, manage wishlists, and spread the holiday cheer!
-    </MudText>
-    
-    <MudButton Href="/secretsanta" Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" StartIcon="@Icons.Material.Filled.CardGiftcard">
-        Start a Secret Santa
-    </MudButton>
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 mb-16">
+    <MudGrid Spacing="6" Class="d-flex align-center justify-center" Style="min-height: 75vh;">
+        <MudItem xs="12" md="6" Class="d-flex flex-column justify-center text-center text-md-start">
+            <MudText Typo="Typo.h2" Color="Color.Primary" Class="mb-4 font-weight-bold">
+                Holiday Helper
+            </MudText>
+            <MudText Typo="Typo.h5" Class="mb-8" Style="line-height: 1.6; color: var(--mud-palette-text-secondary);">
+                Your all-in-one companion to organize gift exchanges, manage wishlists, and spread the holiday cheer.
+            </MudText>
+            <div class="d-flex flex-wrap gap-4 justify-center justify-md-start">
+                <MudButton Href="/secretsanta" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.CardGiftcard" Class="hover-lift px-6 py-3 rounded-xl font-weight-bold">
+                    Start Secret Santa
+                </MudButton>
+            </div>
+        </MudItem>
+        <MudItem xs="12" md="6" Class="d-flex justify-center">
+            <div class="glass-panel pa-4 rounded-xl hover-lift" style="max-width: 500px; width: 100%;">
+                <MudImage Src="/logo.png" Alt="Holiday Helper Logo" Fluid="true" Class="rounded-lg" ObjectFit="ObjectFit.Cover" />
+            </div>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
