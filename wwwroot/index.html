@@ -10,13 +10,13 @@
     <base href="/" />
     <link rel="preload" id="webassembly" />
 
-    <link rel="stylesheet" href="css/app.css?v=2" />
-    <link href="ChristmasApp.styles.css?v=2" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css?v={VERSION}" />
+    <link href="ChristmasApp.styles.css?v={VERSION}" rel="stylesheet" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css?v=2" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css?v={VERSION}" rel="stylesheet" />
 
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -43,13 +43,31 @@
         <span class="dismiss">🗙</span>
     </div>
 
-    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
-    <script src="_content/MudBlazor/MudBlazor.min#[.{fingerprint}].js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js?v={VERSION}"></script>
 
     <script>
         navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' })
             .then(registration => {
                 console.log('Service Worker registered');
+                
+                registration.onupdatefound = () => {
+                    const installingWorker = registration.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                // New content is available; please refresh.
+                                console.log('New content is available; please refresh.');
+                                if (confirm('A new version of Holiday Helper is available. Update now?')) {
+                                    window.location.reload();
+                                }
+                            } else {
+                                // Content is cached for offline use.
+                                console.log('Content is cached for offline use.');
+                            }
+                        }
+                    };
+                };
             });
     </script>
 </body>

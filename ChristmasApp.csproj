@@ -18,4 +18,17 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
+  <Target Name="UpdateIndexHtmlVersion" AfterTargets="Publish">
+    <PropertyGroup>
+      <VersionTimestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</VersionTimestamp>
+      <PublishDirFixed>$(PublishDir.Replace('\', '/'))</PublishDirFixed>
+      <TargetIndexHtml>$(PublishDirFixed)wwwroot/index.html</TargetIndexHtml>
+    </PropertyGroup>
+    
+    <Message Importance="high" Text="Updating {VERSION} placeholder in $(TargetIndexHtml) with $(VersionTimestamp)" />
+    
+    <WriteLinesToFile File="$(TargetIndexHtml).tmp" Lines="$([System.IO.File]::ReadAllText('$(TargetIndexHtml)').Replace('{VERSION}', '$(VersionTimestamp)'))" Overwrite="true" Encoding="UTF-8" />
+    <Move SourceFiles="$(TargetIndexHtml).tmp" DestinationFiles="$(TargetIndexHtml)" OverwriteReadOnlyFiles="true" />
+  </Target>
+
 </Project>
